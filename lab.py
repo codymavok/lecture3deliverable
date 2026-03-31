@@ -61,7 +61,12 @@ def get_embeddings(texts: list[str], model: str = DEFAULT_EMBEDDING_MODEL) -> li
     attribute is a list of objects, each with an `.embedding` field.
     """
     # TODO: Call the API and return the embeddings.
-    raise NotImplementedError
+    response = client.embeddings.create(input=texts, model=model)
+    list_of_embeddings = []
+    for x in response.data:
+        list_of_embeddings.append(x.embedding)
+    return list_of_embeddings
+
 
 
 # ---------------------------------------------------------------------------
@@ -83,7 +88,7 @@ def mean_pool(embeddings: list[list[float]]) -> np.ndarray:
     text), mean-pooling collapses them into one representation.
     """
     # TODO: Compute and return the mean-pooled vector.
-    raise NotImplementedError
+    return np.mean(np.array(embeddings), axis=0)
 
 
 # ---------------------------------------------------------------------------
@@ -107,7 +112,11 @@ def cosine_similarity(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
     (dot product, norm, etc.).
     """
     # TODO: Implement cosine similarity from scratch.
-    raise NotImplementedError
+    numerator = np.dot(vec_a, vec_b)
+    a_norm = np.linalg.norm(vec_a)
+    b_norm = np.linalg.norm(vec_b)
+    denominator = a_norm * b_norm
+    return numerator / denominator
 
 
 # ---------------------------------------------------------------------------
@@ -136,7 +145,12 @@ def top_k_similar(
     Hint: Use your cosine_similarity function from Part 3.
     """
     # TODO: Compute similarities and return the top-k results.
-    raise NotImplementedError
+    ans = []
+    for i in range(len(corpus_vecs)):
+        score = cosine_similarity(corpus_vecs[i], query_vec)
+        pair = (corpus_texts[i], score)
+        ans.append(pair)
+    return sorted(ans, key=lambda x: x[1], reverse=True)[:k]
 
 
 # ---------------------------------------------------------------------------
